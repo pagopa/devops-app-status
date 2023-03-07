@@ -1,14 +1,10 @@
 version: "3.8"
 services:
-  webapp-python:
-    # image: "devops-webapp-python:latest"
+  status:
     build:
       dockerfile: ./Dockerfile
       context: .
-    container_name: webapp-python
+    container_name: status
     restart: always
-    environment:
-      - MY_CONFIGMAP_VALUE=1
-      - MY_SECRET_VALUE=very secret 1
     ports:
       - "8000:8000"
