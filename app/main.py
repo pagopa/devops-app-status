@@ -1,18 +1,5 @@
-from fastapi import FastAPI
-from app.routes.color import color
-from app.routes.status import status_route
-from app.routes.cosmosdb import cosmosdb
-
-
-def include_router(app):
-    app.include_router(color, prefix='/color')
-    app.include_router(status_route, prefix='/status')
-    app.include_router(cosmosdb, prefix='/cosmosdb')
-
-
-def configure_application(app):
-    include_router(app)
-    return app
+from fastapi import FastAPI, Response
+from http import HTTPStatus
 
 
 app = FastAPI()
@@ -20,8 +7,19 @@ app = FastAPI()
 
 @app.get("/")
 async def home_root():
-    return {"home_root": "ok"}
+    return Response(status_code=HTTPStatus.OK)
 
 
-configure_application(app)
+@app.get("/status")
+async def status():
+    return Response(status_code=HTTPStatus.OK)
 
+
+@app.get("/health")
+async def health():
+    return Response(status_code=HTTPStatus.OK)
+
+
+@app.get("/healthz")
+async def healthz():
+    return Response(status_code=HTTPStatus.OK)
