@@ -1,7 +1,6 @@
 version: "3.8"
 services:
   status:
-    # image: "devops-webapp-python:latest"
     build:
       dockerfile: ./Dockerfile
       context: .
