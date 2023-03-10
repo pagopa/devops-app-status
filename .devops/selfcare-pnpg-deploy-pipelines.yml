@@ -72,7 +72,7 @@ stages:
                     targetType: 'inline'
                     script: |
                       pwd
-                      ls -la $(System.DefaultWorkingDirectory)/helm
+                      ls -la $(System.DefaultWorkingDirectory)
                     failOnStderr: true
                 - task: HelmDeploy@0
                   displayName: Helm upgrade
