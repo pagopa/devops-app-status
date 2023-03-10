@@ -4,14 +4,11 @@
 trigger: none
 pr: none
 
-resources:
-  - repo: self
-
 parameters:
   - name: environment
     displayName: Target Environment
     type: string
-    default: dev
+    default: DEV
     values:
       - DEV
       - UAT
@@ -46,6 +43,9 @@ variables:
 
 pool:
   vmImage: "ubuntu-latest"
+
+resources:
+  - repo: self
 
 stages:
   - stage: "Deploy"
