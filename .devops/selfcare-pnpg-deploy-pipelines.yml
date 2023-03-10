@@ -71,8 +71,8 @@ stages:
                     targetType: "inline"
                     script: |
                       pwd
+                      printenv
                       ls -la
-
                       ls -la $(Pipeline.Workspace)
                       ls -la $(System.DefaultWorkingDirectory)
                     failOnStderr: true
