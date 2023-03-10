@@ -21,44 +21,43 @@ parameters:
     type: string
     default: v1.0.0
 
-
 variables:
-  vmImageNameDefault: 'ubuntu-latest'
-  deployNamespace: '$(DEPLOY_NAMESPACE)'
+  vmImageNameDefault: "ubuntu-latest"
+  deployNamespace: "$(DEPLOY_NAMESPACE)"
 
   ${{ if eq(parameters['environment'], 'DEV') }}:
-    environment: 'DEV'
-    dockerRegistryServiceConnection: '$(DEV_CONTAINER_REGISTRY_SERVICE_CONN)'
-    kubernetesServiceConnection: '$(DEV_KUBERNETES_SERVICE_CONN)'
-    containerRegistry: '$(DEV_CONTAINER_REGISTRY_NAME)'
+    environment: "DEV"
+    dockerRegistryServiceConnection: "$(DEV_CONTAINER_REGISTRY_SERVICE_CONN)"
+    kubernetesServiceConnection: "$(DEV_KUBERNETES_SERVICE_CONN)"
+    containerRegistry: "$(DEV_CONTAINER_REGISTRY_NAME)"
     selfHostedAgentPool: $(DEV_AGENT_POOL)
   ${{ if eq(parameters['environment'], 'UAT') }}:
-    environment: 'UAT'
-    dockerRegistryServiceConnection: '$(UAT_CONTAINER_REGISTRY_SERVICE_CONN)'
-    kubernetesServiceConnection: '$(UAT_KUBERNETES_SERVICE_CONN)'
-    containerRegistry: '$(UAT_CONTAINER_REGISTRY_NAME)'
+    environment: "UAT"
+    dockerRegistryServiceConnection: "$(UAT_CONTAINER_REGISTRY_SERVICE_CONN)"
+    kubernetesServiceConnection: "$(UAT_KUBERNETES_SERVICE_CONN)"
+    containerRegistry: "$(UAT_CONTAINER_REGISTRY_NAME)"
     selfHostedAgentPool: $(UAT_AGENT_POOL)
   ${{ if eq(parameters['environment'], 'PROD') }}:
-    environment: 'PROD'
-    dockerRegistryServiceConnection: '$(PROD_CONTAINER_REGISTRY_SERVICE_CONN)'
-    kubernetesServiceConnection: '$(PROD_KUBERNETES_SERVICE_CONN)'
-    containerRegistry: '$(PROD_CONTAINER_REGISTRY_NAME)'
+    environment: "PROD"
+    dockerRegistryServiceConnection: "$(PROD_CONTAINER_REGISTRY_SERVICE_CONN)"
+    kubernetesServiceConnection: "$(PROD_KUBERNETES_SERVICE_CONN)"
+    containerRegistry: "$(PROD_CONTAINER_REGISTRY_NAME)"
     selfHostedAgentPool: $(PROD_AGENT_POOL)
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: "ubuntu-latest"
 
 stages:
-  - stage: 'Deploy'
-    displayName: 'Deploy_to_${{ parameters.environment }}'
+  - stage: "Deploy"
+    displayName: "Deploy_to_${{ parameters.environment }}"
     dependsOn: [] #"Publish_artifact_helm"
     condition: succeeded()
     jobs:
-      - deployment: 'Deploy_to_${{ parameters.environment }}'
-        displayName: 'Deploy_to_${{ parameters.environment }}'
+      - deployment: "Deploy_to_${{ parameters.environment }}"
+        displayName: "Deploy_to_${{ parameters.environment }}"
         pool:
           name: $(selfHostedAgentPool)
-        environment: '${{ parameters.environment }}'
+        environment: "${{ parameters.environment }}"
         strategy:
           runOnce:
             deploy:
@@ -69,16 +68,19 @@ stages:
                   name: getpomversion
                   condition: succeeded()
                   inputs:
-                    targetType: 'inline'
+                    targetType: "inline"
                     script: |
                       pwd
+                      ls -la
+
+                      ls -la $(Pipeline.Workspace)
                       ls -la $(System.DefaultWorkingDirectory)
                     failOnStderr: true
                 - task: HelmDeploy@0
                   displayName: Helm upgrade
                   inputs:
                     kubernetesServiceEndpoint: ${{ variables.kubernetesServiceConnection }}
-                    namespace: '$(deployNamespace)'
+                    namespace: "$(deployNamespace)"
                     command: upgrade
                     chartType: filepath
                     chartPath: $(System.DefaultWorkingDirectory)/helm
