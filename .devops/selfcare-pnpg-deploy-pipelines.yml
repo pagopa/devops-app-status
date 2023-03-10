@@ -83,7 +83,7 @@ stages:
                     namespace: "$(deployNamespace)"
                     command: upgrade
                     chartType: filepath
-                    chartPath: $(System.DefaultWorkingDirectory)/helm
+                    chartPath: $(System.DefaultWorkingDirectory)/helm/selfcare/$(deployNamespace)
                     chartName: $(K8S_IMAGE_REPOSITORY_NAME)
                     releaseName: $(K8S_IMAGE_REPOSITORY_NAME)
                     valueFile: "$(System.DefaultWorkingDirectory)/helm/selfcare/$(deployNamespace)/values-${{ lower(variables.environment) }}.yaml"
