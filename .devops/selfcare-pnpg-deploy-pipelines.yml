@@ -4,14 +4,11 @@
 trigger: none
 pr: none
 
-resources:
-  - repo: self
-
 parameters:
   - name: environment
     displayName: Target Environment
     type: string
-    default: dev
+    default: DEV
     values:
       - DEV
       - UAT
@@ -47,6 +44,9 @@ variables:
 pool:
   vmImage: "ubuntu-latest"
 
+resources:
+  - repo: self
+
 stages:
   - stage: "Deploy"
     displayName: "Deploy_to_${{ parameters.environment }}"
@@ -62,7 +62,7 @@ stages:
           runOnce:
             deploy:
               steps:
-                - download: none
+                - checkout: self
                 - task: Bash@3
                   displayName: Get POM version
                   name: getpomversion
@@ -76,6 +76,16 @@ stages:
                       ls -la $(Pipeline.Workspace)
                       ls -la $(System.DefaultWorkingDirectory)
                     failOnStderr: true
+                - task: Bash@3
+                  name: helm_dependency_build
+                  displayName: Helm dependency build
+                  inputs:
+                    workingDirectory: '$(System.DefaultWorkingDirectory)/helm/selfcare/$(deployNamespace)'
+                    targetType: 'inline'
+                    script: |
+                      helm repo add pagopa-microservice https://pagopa.github.io/aks-microservice-chart-blueprint
+                      helm dep build
+                    failOnStderr: true
                 - task: HelmDeploy@0
                   displayName: Helm upgrade
                   inputs:
@@ -83,10 +93,10 @@ stages:
                     namespace: "$(deployNamespace)"
                     command: upgrade
                     chartType: filepath
-                    chartPath: $(System.DefaultWorkingDirectory)/helm
                     chartName: $(K8S_IMAGE_REPOSITORY_NAME)
                     releaseName: $(K8S_IMAGE_REPOSITORY_NAME)
-                    valueFile: "$(System.DefaultWorkingDirectory)/helm/values-${{ lower(variables.environment) }}.yaml"
+                    chartPath: $(System.DefaultWorkingDirectory)/helm/selfcare/$(deployNamespace)
+                    valueFile: "$(System.DefaultWorkingDirectory)/helm/selfcare/$(deployNamespace)/values-${{ lower(variables.environment) }}.yaml"
                     install: true
                     waitForExecution: true
                     arguments: "--timeout 2m0s"
