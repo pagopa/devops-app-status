@@ -7,9 +7,9 @@ output "subscription_id" {
 }
 
 output "ci_service_principal_github_action_name" {
-  value = module.github_runner_ci.display_name
+  value = module.github_runner_aks.display_name
 }
 
 output "ci_service_principal_github_action_client_id" {
-  value = module.github_runner_ci.client_id
+  value = module.github_runner_aks.client_id
 }

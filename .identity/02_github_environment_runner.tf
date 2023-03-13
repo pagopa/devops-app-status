@@ -1,5 +1,5 @@
 resource "github_repository_environment" "github_repository_environment_runner" {
-  environment = "${var.env}-runner"
+  environment = local.github_env_name
   repository  = var.github.repository
   deployment_branch_policy {
     protected_branches     = false
@@ -8,10 +8,11 @@ resource "github_repository_environment" "github_repository_environment_runner" 
 }
 
 module "github_environment_runner_secrets" {
-  source = "./modules/github-environment-secrets"
+  source = "git::https://github.com/pagopa/github-actions-tf-modules//github-environment-secrets?ref=v1.0.0"
+
 
   github_repository                  = "devops-app-status"
-  github_repository_environment_name = "${var.env}-aks"
+  github_repository_environment_name = local.github_env_name
 
   secrets = {
     "AZURE_TENANT_ID" : data.azurerm_client_config.current.tenant_id,
