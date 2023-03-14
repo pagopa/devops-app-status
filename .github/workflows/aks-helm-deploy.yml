@@ -45,11 +45,19 @@ jobs:
           self_hosted_runner_image_tag: "beta-kubelogin-setup"
 
   deploy_helm:
-    needs: [ create_runner ]
-    runs-on: [ self-hosted, "${{ needs.create_runner.outputs.runner_name }}" ]
     name: Deploy on AKS
+    runs-on: [ self-hosted, "${{ needs.create_runner.outputs.runner_name }}" ]
+    needs: [ create_runner ]
     environment: dev
     steps:
+      - uses: azure/setup-helm@v3
+        id: install_helm
+        with:
+          version: 'v3.11.2'
+      - name: Check helm
+        shell: bash
+        run: |
+          helm version
       - name: Deploy helm 3
         uses: pagopa/github-actions-template/aks-helm-deploy@helm-deploy
         with:
