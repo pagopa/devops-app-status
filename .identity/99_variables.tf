@@ -1,7 +1,7 @@
 locals {
   project  = "${var.prefix}-${var.env_short}"
   app_name = "github-${var.github.org}-${var.github.repository}-${var.env}"
-  github_env_name = "${var.env}-aks"
+  github_env_name = "${var.env}"
 
 
   #
