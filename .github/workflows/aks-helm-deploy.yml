@@ -1,4 +1,4 @@
-name: Self Hosted Runner
+name: Deploy on AKS
 
 on:
   workflow_dispatch:
@@ -13,8 +13,10 @@ on:
         description: Github Token
 
 env:
-  NAMESPACE: apiconfig
-  APP_NAME: pagopaapiconfig
+  NAMESPACE: diego
+  APP_NAME: diegoappstatus
+  AKS_NAME: dvopla-d-neu-dev01-aks
+  AKS_RESOURCE_GROUP: dvopla-d-neu-dev01-aks-rg
 
 
 permissions:
@@ -25,8 +27,7 @@ jobs:
   create_runner:
     name: Create Runner
     runs-on: ubuntu-22.04
-    environment: ${{ inputs.environment }}
-    if: ${{ inputs.matrix == inputs.environment || inputs.environment == 'all' }}
+    environment: dev-runner
     outputs:
       runner_name: ${{ steps.create_github_runner.outputs.runner_name }}
     steps:
@@ -35,12 +36,13 @@ jobs:
         # from https://github.com/pagopa/github-self-hosted-runner-azure-create-action/commits/main
         uses: pagopa/github-self-hosted-runner-azure-create-action@b4590e069e753daee6bc9809d484523cc7026035
         with:
-          client_id: ${{ vars.client_id }}
-          tenant_id: ${{ vars.tenant_id }}
-          subscription_id: ${{ vars.subscription_id }}
-          container_app_environment_name: app
-          resource_group_name: runner-rg
-          pat_token: ${{ inputs.token }}
+          client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          container_app_environment_name: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
+          resource_group_name: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+          pat_token: ${{ secrets.BOT_TOKEN }}
+          self_hosted_runner_image_tag: "beta-kubelogin-setup"
 
   deploy:
     needs: [ create_runner ]
@@ -48,34 +50,34 @@ jobs:
     name: Deploy on AKS
     steps:
       - name: Deploy
-        uses: pagopa/github-actions-template/aks-deploy@deploy_aks_beta
+        uses: pagopa/github-actions-template/aks-helm-deploy@helm-deploy
         with:
           branch: ${{ github.ref_name }}
-          client_id: ${{ inputs.client_id }}
-          tenant_id: ${{ inputs.tenant_id }}
-          subscription_id: ${{ inputs.subscription_id }}
-          env: ${{ inputs.env }}
           namespace: ${{ env.NAMESPACE }}
-          cluster_name: pagopa-d-weu-dev-aks
-          resource_group: pagopa-d-weu-dev-aks-rg
           app_name: ${{ env.APP_NAME }}
-          helm_upgrade_options: ${{( inputs.beta && '--set microservice-chart.deployment.create=false') || '' }}
+          helm_upgrade_options: ""
+          env: ${{ inputs.env }}
+          cluster_name: ${{ env.AKS_NAME }}
+          resource_group: ${{ env.AKS_RESOURCE_GROUP }}
+          client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
   cleanup_runner:
     name: Cleanup Runner
     if: always()
     runs-on: ubuntu-22.04
     environment: dev-runner
-    needs: [ create_runner, deploy ]
+    needs: [create_runner, terraform_apply_job]
     steps:
       - name: Cleanup GitHub Runner
         id: cleanup_github_runner
         # from https://github.com/pagopa/github-self-hosted-runner-azure-cleanup-action/commits/main
         uses: pagopa/github-self-hosted-runner-azure-cleanup-action@97731a35e6ffc79b66c4dfd2aae5e4fd04e3ebb5
         with:
-          client_id: ${{ vars.client_id }}
-          tenant_id: ${{ vars.tenant_id }}
-          subscription_id: ${{ vars.subscription_id }}
-          resource_group_name: runner-rg
+          client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          resource_group_name: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
           runner_name: ${{ needs.create_runner.outputs.runner_name }}
-          pat_token: ${{ inputs.token }}
+          pat_token: ${{ secrets.BOT_TOKEN }}
