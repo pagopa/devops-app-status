@@ -27,7 +27,7 @@ jobs:
   create_runner:
     name: Create Runner
     runs-on: ubuntu-22.04
-    environment: dev-runner
+    environment: dev
     outputs:
       runner_name: ${{ steps.create_github_runner.outputs.runner_name }}
     steps:
@@ -42,7 +42,7 @@ jobs:
           container_app_environment_name: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
           resource_group_name: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
           pat_token: ${{ secrets.BOT_TOKEN }}
-          # self_hosted_runner_image_tag: "beta-kubelogin-setup"
+          self_hosted_runner_image_tag: "beta-kubelogin-setup"
 
   deploy_helm:
     needs: [ create_runner ]
