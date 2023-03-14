@@ -44,7 +44,7 @@ jobs:
           pat_token: ${{ secrets.BOT_TOKEN }}
           self_hosted_runner_image_tag: "beta-kubelogin-setup"
 
-  deploy:
+  deploy_helm:
     needs: [ create_runner ]
     runs-on: [ self-hosted, "${{ needs.create_runner.outputs.runner_name }}" ]
     name: Deploy on AKS
@@ -68,7 +68,7 @@ jobs:
     if: always()
     runs-on: ubuntu-22.04
     environment: dev-runner
-    needs: [create_runner, terraform_apply_job]
+    needs: [create_runner, deploy_helm]
     steps:
       - name: Cleanup GitHub Runner
         id: cleanup_github_runner
