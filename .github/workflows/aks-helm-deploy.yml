@@ -1,0 +1,81 @@
+name: Self Hosted Runner
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        required: true
+        description: The name of the environment where to deploy
+        type: string
+    secrets:
+      token:
+        required: true
+        description: Github Token
+
+env:
+  NAMESPACE: apiconfig
+  APP_NAME: pagopaapiconfig
+
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  create_runner:
+    name: Create Runner
+    runs-on: ubuntu-22.04
+    environment: ${{ inputs.environment }}
+    if: ${{ inputs.matrix == inputs.environment || inputs.environment == 'all' }}
+    outputs:
+      runner_name: ${{ steps.create_github_runner.outputs.runner_name }}
+    steps:
+      - name: Create GitHub Runner
+        id: create_github_runner
+        # from https://github.com/pagopa/github-self-hosted-runner-azure-create-action/commits/main
+        uses: pagopa/github-self-hosted-runner-azure-create-action@b4590e069e753daee6bc9809d484523cc7026035
+        with:
+          client_id: ${{ vars.client_id }}
+          tenant_id: ${{ vars.tenant_id }}
+          subscription_id: ${{ vars.subscription_id }}
+          container_app_environment_name: app
+          resource_group_name: runner-rg
+          pat_token: ${{ inputs.token }}
+
+  deploy:
+    needs: [ create_runner ]
+    runs-on: [ self-hosted, "${{ needs.create_runner.outputs.runner_name }}" ]
+    name: Deploy on AKS
+    steps:
+      - name: Deploy
+        uses: pagopa/github-actions-template/aks-deploy@deploy_aks_beta
+        with:
+          branch: ${{ github.ref_name }}
+          client_id: ${{ inputs.client_id }}
+          tenant_id: ${{ inputs.tenant_id }}
+          subscription_id: ${{ inputs.subscription_id }}
+          env: ${{ inputs.env }}
+          namespace: ${{ env.NAMESPACE }}
+          cluster_name: pagopa-d-weu-dev-aks
+          resource_group: pagopa-d-weu-dev-aks-rg
+          app_name: ${{ env.APP_NAME }}
+          helm_upgrade_options: ${{( inputs.beta && '--set microservice-chart.deployment.create=false') || '' }}
+
+  cleanup_runner:
+    name: Cleanup Runner
+    if: always()
+    runs-on: ubuntu-22.04
+    environment: dev-runner
+    needs: [ create_runner, deploy ]
+    steps:
+      - name: Cleanup GitHub Runner
+        id: cleanup_github_runner
+        # from https://github.com/pagopa/github-self-hosted-runner-azure-cleanup-action/commits/main
+        uses: pagopa/github-self-hosted-runner-azure-cleanup-action@97731a35e6ffc79b66c4dfd2aae5e4fd04e3ebb5
+        with:
+          client_id: ${{ vars.client_id }}
+          tenant_id: ${{ vars.tenant_id }}
+          subscription_id: ${{ vars.subscription_id }}
+          resource_group_name: runner-rg
+          runner_name: ${{ needs.create_runner.outputs.runner_name }}
+          pat_token: ${{ inputs.token }}
