@@ -57,7 +57,7 @@ jobs:
           namespace: ${{ env.NAMESPACE }}
           app_name: ${{ env.APP_NAME }}
           helm_upgrade_options: ""
-          env: ${{ inputs.env }}
+          env: ${{ inputs.environment }}
           cluster_name: ${{ env.AKS_NAME }}
           resource_group: ${{ env.AKS_RESOURCE_GROUP }}
           client_id: ${{ secrets.AZURE_CLIENT_ID }}
