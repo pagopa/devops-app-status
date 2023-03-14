@@ -50,7 +50,7 @@ jobs:
     name: Deploy on AKS
     environment: dev
     steps:
-      - name: Deploy helm
+      - name: Deploy helm 2
         uses: pagopa/github-actions-template/aks-helm-deploy@helm-deploy
         with:
           branch: ${{ github.ref_name }}
