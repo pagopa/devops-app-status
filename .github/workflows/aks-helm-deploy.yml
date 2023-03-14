@@ -67,7 +67,7 @@ jobs:
     name: Cleanup Runner
     if: always()
     runs-on: ubuntu-22.04
-    environment: dev-runner
+    environment: dev
     needs: [create_runner, deploy_helm]
     steps:
       - name: Cleanup GitHub Runner
