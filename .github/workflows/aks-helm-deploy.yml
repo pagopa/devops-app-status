@@ -50,24 +50,31 @@ jobs:
     needs: [ create_runner ]
     environment: dev
     steps:
-      - uses: azure/setup-helm@v3
-        id: install_helm
+      # - uses: azure/setup-helm@v3
+      #   id: install_helm
+      #   with:
+      #     version: 'v3.11.2'
+      # - name: Check helm
+      #   shell: bash
+      #   run: |
+      #     helm version
+      - name: Checkout
+        id: checkout
+        # from https://github.com/actions/checkout/commits/main
+        uses: actions/checkout@1f9a0c22da41e6ebfa534300ef656657ea2c6707
         with:
-          version: 'v3.11.2'
-      - name: Check helm
-        shell: bash
-        run: |
-          helm version
+          persist-credentials: false
+          fetch-depth: 0
+
       - name: Deploy helm 3
-        uses: pagopa/github-actions-template/aks-helm-deploy@helm-deploy
+        uses: pagopa/github-actions-template/aks-blueprint-helm-deploy@helm-deploy
         with:
-          branch: ${{ github.ref_name }}
           namespace: ${{ env.NAMESPACE }}
-          app_name: ${{ env.APP_NAME }}
-          helm_upgrade_options: ""
-          env: ${{ inputs.environment }}
-          cluster_name: ${{ env.AKS_NAME }}
-          resource_group: ${{ env.AKS_RESOURCE_GROUP }}
+          release_name: ${{ env.APP_NAME }}
+          helm_upgrade_options: "--debug"
+          values_file_name: values-${{ inputs.environment }}.yaml
+          aks_name: ${{ env.AKS_NAME }}
+          aks_resource_group: ${{ env.AKS_RESOURCE_GROUP }}
           client_id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant_id: ${{ secrets.AZURE_TENANT_ID }}
           subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
