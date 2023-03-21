@@ -52,3 +52,13 @@ variable "container_app_github_runner_env_rg" {
   type        = string
   description = "Container app resource group env dedicated for github runners"
 }
+
+variable "aks_name" {
+  type        = string
+  description = "Aks cluster name"
+}
+
+variable "aks_resource_group" {
+  type        = string
+  description = "Aks cluster resource group name"
+}
