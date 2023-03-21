@@ -1,3 +1,4 @@
+#!/bin/bash
 export PYTHONPATH=$(pwd)
 export API_ENDPOINT_PORT=5000
 export VERBOSITY=DEBUG
