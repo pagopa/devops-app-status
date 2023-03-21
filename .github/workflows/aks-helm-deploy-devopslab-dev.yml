@@ -1,4 +1,4 @@
-name: Helm@devopslab-dev
+name: Helm@deploy
 
 on:
   workflow_dispatch:
@@ -27,7 +27,7 @@ jobs:
   create_runner:
     name: Create Runner
     runs-on: ubuntu-22.04
-    environment: dev
+    environment: ${{ inputs.environment }}
     outputs:
       runner_name: ${{ steps.create_github_runner.outputs.runner_name }}
     steps:
@@ -48,7 +48,7 @@ jobs:
     name: Deploy on AKS
     runs-on: [ self-hosted, "${{ needs.create_runner.outputs.runner_name }}" ]
     needs: [ create_runner ]
-    environment: dev
+    environment: ${{ inputs.environment }}
     steps:
       - name: Checkout
         id: checkout
@@ -76,7 +76,7 @@ jobs:
     name: Cleanup Runner
     if: always()
     runs-on: ubuntu-22.04
-    environment: dev
+    environment: ${{ inputs.environment }}
     needs: [create_runner, deploy_helm]
     steps:
       - name: Cleanup GitHub Runner
