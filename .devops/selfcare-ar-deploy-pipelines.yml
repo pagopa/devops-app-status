@@ -1,0 +1,102 @@
+# Azure DevOps pipeline to release a new version and deploy to production.
+
+# Only manual activations are intended
+trigger: none
+pr: none
+
+parameters:
+  - name: environment
+    displayName: Target Environment
+    type: string
+    default: DEV
+    values:
+      - DEV
+      - UAT
+      - PROD
+  - name: version
+    displayName: Version of the docker image
+    type: string
+    default: v1.0.0
+
+variables:
+  vmImageNameDefault: "ubuntu-latest"
+  deployNamespace: "$(DEPLOY_NAMESPACE)"
+
+  ${{ if eq(parameters['environment'], 'DEV') }}:
+    environment: "DEV"
+    dockerRegistryServiceConnection: "$(DEV_CONTAINER_REGISTRY_SERVICE_CONN)"
+    kubernetesServiceConnection: "$(DEV_KUBERNETES_SERVICE_CONN)"
+    containerRegistry: "$(DEV_CONTAINER_REGISTRY_NAME)"
+    selfHostedAgentPool: $(DEV_AGENT_POOL)
+  ${{ if eq(parameters['environment'], 'UAT') }}:
+    environment: "UAT"
+    dockerRegistryServiceConnection: "$(UAT_CONTAINER_REGISTRY_SERVICE_CONN)"
+    kubernetesServiceConnection: "$(UAT_KUBERNETES_SERVICE_CONN)"
+    containerRegistry: "$(UAT_CONTAINER_REGISTRY_NAME)"
+    selfHostedAgentPool: $(UAT_AGENT_POOL)
+  ${{ if eq(parameters['environment'], 'PROD') }}:
+    environment: "PROD"
+    dockerRegistryServiceConnection: "$(PROD_CONTAINER_REGISTRY_SERVICE_CONN)"
+    kubernetesServiceConnection: "$(PROD_KUBERNETES_SERVICE_CONN)"
+    containerRegistry: "$(PROD_CONTAINER_REGISTRY_NAME)"
+    selfHostedAgentPool: $(PROD_AGENT_POOL)
+
+pool:
+  vmImage: "ubuntu-latest"
+
+resources:
+  - repo: self
+
+stages:
+  - stage: "Deploy"
+    displayName: "Deploy_to_${{ parameters.environment }}"
+    dependsOn: [] #"Publish_artifact_helm"
+    condition: succeeded()
+    jobs:
+      - deployment: "Deploy_to_${{ parameters.environment }}"
+        displayName: "Deploy_to_${{ parameters.environment }}"
+        pool:
+          name: $(selfHostedAgentPool)
+        environment: "${{ parameters.environment }}"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                - task: Bash@3
+                  displayName: Get POM version
+                  name: getpomversion
+                  condition: succeeded()
+                  inputs:
+                    targetType: "inline"
+                    script: |
+                      pwd
+                      printenv
+                      ls -la
+                      ls -la $(Pipeline.Workspace)
+                      ls -la $(System.DefaultWorkingDirectory)
+                    failOnStderr: true
+                - task: Bash@3
+                  name: helm_dependency_build
+                  displayName: Helm dependency build
+                  inputs:
+                    workingDirectory: '$(System.DefaultWorkingDirectory)/helm/selfcare/$(deployNamespace)'
+                    targetType: 'inline'
+                    script: |
+                      helm repo add pagopa-microservice https://pagopa.github.io/aks-microservice-chart-blueprint
+                      helm dep build
+                    failOnStderr: true
+                - task: HelmDeploy@0
+                  displayName: Helm upgrade
+                  inputs:
+                    kubernetesServiceEndpoint: ${{ variables.kubernetesServiceConnection }}
+                    namespace: "$(deployNamespace)"
+                    command: upgrade
+                    chartType: filepath
+                    chartName: $(K8S_IMAGE_REPOSITORY_NAME)
+                    releaseName: $(K8S_IMAGE_REPOSITORY_NAME)
+                    chartPath: $(System.DefaultWorkingDirectory)/helm/selfcare/$(deployNamespace)
+                    valueFile: "$(System.DefaultWorkingDirectory)/helm/selfcare/$(deployNamespace)/values-${{ lower(variables.environment) }}.yaml"
+                    install: true
+                    waitForExecution: true
+                    arguments: "--timeout 2m0s"
