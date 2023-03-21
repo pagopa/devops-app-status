@@ -25,7 +25,7 @@ resource "github_repository_environment" "github_repository_environment_runner" 
 module "github_environment_runner_secrets" {
   source = "git::https://github.com/pagopa/github-actions-tf-modules//github-environment-secrets?ref=v1.0.0"
 
-  github_repository                  = "devops-app-status"
+  github_repository                  = var.github.repository
   github_repository_environment_name = local.github_env_name
 
   secrets = {
