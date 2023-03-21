@@ -1,14 +1,7 @@
 locals {
-  project  = "${var.prefix}-${var.env_short}"
-  app_name = "github-${var.github.org}-${var.github.repository}-${var.env}"
-  github_env_name = "${var.env}"
-
-
-  #
-  # Container app
-  #
-  container_app_github_runner_env_name = "dvopla-d-neu-core-github-runner-cae"
-  container_app_github_runner_env_rg   = "dvopla-d-neu-core-github-runner-rg"
+  project         = "${var.prefix}-${var.env_short}"
+  app_name        = "github-${var.github.org}-${var.github.repository}-${var.env}"
+  github_env_name = "${var.prefix}-${var.env}"
 }
 
 variable "prefix" {
@@ -48,4 +41,14 @@ variable "github_token" {
   type        = string
   sensitive   = true
   description = "GitHub Organization and repository name"
+}
+
+variable "container_app_github_runner_env_name" {
+  type        = string
+  description = "Container app env name dedicated for github runners"
+}
+
+variable "container_app_github_runner_env_rg" {
+  type        = string
+  description = "Container app resource group env dedicated for github runners"
 }
