@@ -23,8 +23,8 @@ locals {
     "AZURE_CONTAINER_APP_ENVIRONMENT_NAME" : var.container_app_github_runner_env_name,
     "AZURE_CONTAINER_APP_ENVIRONMENT_RESOURCE_GROUP_NAME" : var.container_app_github_runner_env_rg,
     "ENV" : var.env,
-    "AKS_NAME": var.aks_name,
-    "AKS_RESOURCE_GROUP": var.aks_resource_group,
+    "AKS_NAME" : var.aks_name,
+    "AKS_RESOURCE_GROUP" : var.aks_resource_group,
   }
 }
 
@@ -51,9 +51,9 @@ resource "github_actions_environment_secret" "github_environment_runner_secrets"
 }
 
 resource "github_actions_environment_variable" "github_environment_runner_variables" {
-  for_each        = local.env_variables
-  repository      = var.github.repository
-  environment     = local.github_env_name
-  variable_name    = each.key
-  value            = each.value
+  for_each      = local.env_variables
+  repository    = var.github.repository
+  environment   = local.github_env_name
+  variable_name = each.key
+  value         = each.value
 }
