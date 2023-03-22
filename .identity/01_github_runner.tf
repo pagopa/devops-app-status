@@ -1,5 +1,5 @@
 module "github_runner_aks" {
-  source = "./modules/app-github-runner-aks"
+  source = "git::https://github.com/pagopa/github-actions-tf-modules.git//app-github-runner-creator?ref=main"
 
   app_name = "${local.app_name}-aks"
 
@@ -10,7 +10,6 @@ module "github_runner_aks" {
   github_environment_name = local.github_env_name
 
   container_app_github_runner_env_rg = var.container_app_github_runner_env_rg
-
 }
 
 locals {
