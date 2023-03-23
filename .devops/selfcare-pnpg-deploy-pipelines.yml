@@ -64,19 +64,6 @@ stages:
               steps:
                 - checkout: self
                 - task: Bash@3
-                  displayName: Get POM version
-                  name: getpomversion
-                  condition: succeeded()
-                  inputs:
-                    targetType: "inline"
-                    script: |
-                      pwd
-                      printenv
-                      ls -la
-                      ls -la $(Pipeline.Workspace)
-                      ls -la $(System.DefaultWorkingDirectory)
-                    failOnStderr: true
-                - task: Bash@3
                   name: helm_dependency_build
                   displayName: Helm dependency build
                   inputs:
