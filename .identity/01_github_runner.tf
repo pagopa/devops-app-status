@@ -1,3 +1,8 @@
+data "github_organization_teams" "all" {
+  root_teams_only = true
+  summary_only    = true
+}
+
 module "github_runner_aks" {
   source = "git::https://github.com/pagopa/github-actions-tf-modules.git//app-github-runner-creator?ref=main"
 
