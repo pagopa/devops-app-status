@@ -1,4 +1,4 @@
-name: Helm@pagopa/afm/dev
+name: Helm@pagopa-afm-dev
 
 on:
   workflow_dispatch:
