@@ -1,0 +1,90 @@
+name: Helm@pagopa/afm/dev
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        required: true
+        description: The name of the environment where to deploy
+        type: environment
+    secrets:
+      token:
+        required: true
+        description: Github Token
+
+env:
+  NAMESPACE: ${{ vars.DOMAIN }}
+  APP_NAME: app-status
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  create_runner:
+    name: Create Runner
+    runs-on: ubuntu-22.04
+    environment: ${{ inputs.environment }}
+    outputs:
+      runner_name: ${{ steps.create_github_runner.outputs.runner_name }}
+    steps:
+      - name: Create GitHub Runner
+        id: create_github_runner
+        # from https://github.com/pagopa/eng-github-actions-iac-template/tree/main/azure/github-self-hosted-runner-azure-create-action
+        uses: pagopa/eng-github-actions-iac-template/azure/github-self-hosted-runner-azure-create-action
+        with:
+          client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          container_app_environment_name: ${{ vars.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
+          resource_group_name: ${{ vars.AZURE_CONTAINER_APP_ENVIRONMENT_RESOURCE_GROUP_NAME }}
+          pat_token: ${{ secrets.BOT_TOKEN }}
+          # self_hosted_runner_image_tag: "v1.4.0"
+
+  deploy_helm:
+    name: Deploy on AKS
+    runs-on: [ self-hosted, "${{ needs.create_runner.outputs.runner_name }}" ]
+    needs: [ create_runner ]
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout
+        id: checkout
+        # from https://github.com/actions/checkout/commits/main
+        uses: actions/checkout@1f9a0c22da41e6ebfa534300ef656657ea2c6707
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Deploy Aks blueprint chart
+        # from https://github.com/pagopa/github-actions-template
+        uses: pagopa/github-actions-template/aks-blueprint-helm-deploy@dd79d69bbc777cd4f79e14e332267b9c728e2d63
+        with:
+          namespace: ${{ env.NAMESPACE }}
+          release-name: ${{ env.APP_NAME }}
+          helm-upgrade-options: "--debug"
+          chart-path: "helm/devopslab/diego"
+          values-file-name: values-${{ vars.ENV }}.yaml
+          aks-name: ${{ vars.AKS_NAME }}
+          aks-resource-group: ${{ vars.AKS_RESOURCE_GROUP }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+  cleanup_runner:
+    name: Cleanup Runner
+    if: always()
+    runs-on: ubuntu-22.04
+    environment: ${{ inputs.environment }}
+    needs: [create_runner, deploy_helm]
+    steps:
+      - name: Cleanup GitHub Runner
+        id: cleanup_github_runner
+        # from https://github.com/pagopa/eng-github-actions-iac-template/tree/main/azure/github-self-hosted-runner-azure-cleanup-action
+        uses: pagopa/eng-github-actions-iac-template/azure/github-self-hosted-runner-azure-cleanup-action@0ee2f58fd46d10ac7f00bce4304b98db3dbdbe9a
+        with:
+          client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          resource_group_name: ${{ vars.AZURE_CONTAINER_APP_ENVIRONMENT_RESOURCE_GROUP_NAME }}
+          runner_name: ${{ needs.create_runner.outputs.runner_name }}
+          pat_token: ${{ secrets.BOT_TOKEN }}
