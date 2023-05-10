@@ -6,7 +6,7 @@ data "github_organization_teams" "all" {
 module "github_runner_aks" {
   source = "git::https://github.com/pagopa/github-actions-tf-modules.git//app-github-runner-creator?ref=main"
 
-  app_name = "${local.app_name}-aks"
+  app_name = local.app_name
 
   subscription_id = data.azurerm_subscription.current.id
 
@@ -29,6 +29,8 @@ locals {
     "ENV" : var.env,
     "AKS_NAME" : var.aks_name,
     "AKS_RESOURCE_GROUP" : var.aks_resource_group,
+    "AZURE_AD_APPNAME" : local.app_name,
+    "DOMAIN": var.domain,
   }
 }
 
@@ -39,11 +41,6 @@ resource "github_repository_environment" "github_repository_environment_runner" 
     protected_branches     = false
     custom_branch_policies = true
   }
-
-  depends_on = [
-    github_actions_environment_secret.github_environment_runner_secrets,
-    github_actions_environment_variable.github_environment_runner_variables
-  ]
 }
 
 resource "github_actions_environment_secret" "github_environment_runner_secrets" {
@@ -52,6 +49,8 @@ resource "github_actions_environment_secret" "github_environment_runner_secrets"
   environment     = local.github_env_name
   secret_name     = each.key
   plaintext_value = each.value
+
+  depends_on = [ github_repository_environment.github_repository_environment_runner ]
 }
 
 resource "github_actions_environment_variable" "github_environment_runner_variables" {
@@ -60,4 +59,7 @@ resource "github_actions_environment_variable" "github_environment_runner_variab
   environment   = local.github_env_name
   variable_name = each.key
   value         = each.value
+
+    depends_on = [ github_repository_environment.github_repository_environment_runner ]
+
 }

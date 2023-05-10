@@ -1,7 +1,7 @@
 locals {
-  project         = "${var.prefix}-${var.env_short}"
-  app_name        = "github-${var.github.org}-${var.github.repository}-${var.env}"
-  github_env_name = "${var.prefix}-${var.env}"
+  product         = "${var.prefix}-${var.env_short}"
+  app_name        = "github-${var.github.org}-${var.github.repository}-${var.prefix}-${var.domain}-${var.env}-aks"
+  github_env_name = "${var.domain}-${var.env}"
 }
 
 variable "prefix" {
@@ -27,6 +27,11 @@ variable "env_short" {
     )
     error_message = "Max length is 1 chars."
   }
+}
+
+variable "domain" {
+  type        = string
+  description = "Domain name"
 }
 
 variable "github" {
