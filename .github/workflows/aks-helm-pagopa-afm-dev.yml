@@ -15,6 +15,7 @@ on:
 env:
   NAMESPACE: ${{ vars.DOMAIN }}
   APP_NAME: app-status
+  CHART_PATH: helm/pagopa/afm
 
 permissions:
   id-token: write
@@ -62,7 +63,7 @@ jobs:
           namespace: ${{ env.NAMESPACE }}
           release-name: ${{ env.APP_NAME }}
           helm-upgrade-options: "--debug"
-          chart-path: "helm/devopslab/diego"
+          chart-path: "${{ env.CHART_PATH }}"
           values-file-name: values-${{ vars.ENV }}.yaml
           aks-name: ${{ vars.AKS_NAME }}
           aks-resource-group: ${{ vars.AKS_RESOURCE_GROUP }}
