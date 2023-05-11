@@ -25,5 +25,5 @@ github_repository_environment_cd = {
 container_app_github_runner_env_name = "pagopa-d-weu-github-runner-cae"
 container_app_github_runner_env_rg   = "pagopa-d-weu-github-runner-rg"
 
-aks_name= "pagopa-d-neu-dev-aks"
-aks_resource_group= "pagopa-d-neu-dev-aks-rg"
+aks_name= "pagopa-d-weu-dev-aks"
+aks_resource_group= "pagopa-d-weu-dev-aks-rg"
