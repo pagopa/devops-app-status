@@ -3,6 +3,11 @@ data "github_organization_teams" "all" {
   summary_only    = true
 }
 
+data "azurerm_kubernetes_cluster" "aks" {
+  name                = var.aks_name
+  resource_group_name = var.aks_resource_group
+}
+
 module "github_runner_aks" {
   source = "git::https://github.com/pagopa/github-actions-tf-modules.git//app-github-runner-creator?ref=main"
 
@@ -16,6 +21,46 @@ module "github_runner_aks" {
 
   container_app_github_runner_env_rg = var.container_app_github_runner_env_rg
 }
+
+# resource "azurerm_role_assignment" "aks_cluster_role" {
+#   scope                = data.azurerm_kubernetes_cluster.aks.id
+#   role_definition_name = "Azure Kubernetes Service RBAC Writer"
+#   principal_id         = module.github_runner_aks.client_id
+# }
+
+resource "null_resource" "aks_with_iac_aad_plus_namespace_ci" {
+  triggers = {
+    aks_id               = data.azurerm_kubernetes_cluster.aks.id
+    service_principal_id = module.github_runner_aks.client_id
+    namespace            = var.domain
+    version = "v1"
+  }
+
+  provisioner "local-exec" {
+    command = <<EOT
+      az role assignment create --role "Azure Kubernetes Service RBAC Admin" \
+      --assignee ${self.triggers.service_principal_id} \
+      --scope ${self.triggers.aks_id}/namespaces/${self.triggers.namespace}
+
+      az role assignment list --role "Azure Kubernetes Service RBAC Admin"  \
+      --scope ${self.triggers.aks_id}/namespaces/${self.triggers.namespace}
+    EOT
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = <<EOT
+      az role assignment delete --role "Azure Kubernetes Service RBAC Admin" \
+      --assignee ${self.triggers.service_principal_id} \
+      --scope ${self.triggers.aks_id}/namespaces/${self.triggers.namespace}
+    EOT
+  }
+}
+
+
+#
+#
+#
 
 locals {
   env_secrets = {
