@@ -21,12 +21,14 @@ go to the helm folder like `helm/selfcare/pnpg`
 helm dep update
 ```
 
-### Install helm package
+### Deploy helm package
+
+Go to helm folder an launch this command
 
 ```sh
 helm upgrade -i -n <namespace> -f <values file name> <helm app name> \.
 
-helm upgrade -i -n idpay -f values-dev.yaml devops-java-springboot-color \.
+helm upgrade -i -n diego -f values-dev.yaml status \.
 ```
 
 ## Special thanks
