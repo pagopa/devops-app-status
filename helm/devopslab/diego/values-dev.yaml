@@ -12,14 +12,14 @@ microservice-chart:
 
   image:
     repository: ghcr.io/pagopa/devops-app-status
-    tag: v1.0.0
+    tag: v1.5.0
     pullPolicy: Always
 
   livenessProbe:
     httpGet:
       path: /status
       port: 8000
-    initialDelaySeconds: 60
+    initialDelaySeconds: 10
     failureThreshold: 6
     periodSeconds: 10
 
@@ -27,7 +27,7 @@ microservice-chart:
     httpGet:
       path: /status
       port: 8000
-    initialDelaySeconds: 60
+    initialDelaySeconds: 10
     failureThreshold: 6
     periodSeconds: 10
 
@@ -44,7 +44,7 @@ microservice-chart:
   ingress:
     create: true
     host: "dev01.diego.internal.devopslab.pagopa.it"
-    path: /diego/status(/|$)(.*)
+    path: /status(/|$)(.*)
     rewriteTarget: /$2
     servicePort: 8000
     # proxyBodySize: 2m
@@ -85,6 +85,9 @@ microservice-chart:
         metadata:
           type: Utilization
           value: "60"
+
+  secretProviderClass:
+    create: false
 
   # nodeSelector: {}
 
