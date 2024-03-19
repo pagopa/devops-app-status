@@ -1,0 +1,87 @@
+microservice-chart:
+  namespace: "blueprint"
+
+  deployment:
+    create: true
+    replicas: 3
+
+  envConfig:
+    APP: foo
+    MY_APP_COLOR: "green"
+
+  # envSecret:
+  #   MY_KV_SECRET: dvopla-d-neu-dev01-aks-apiserver-url
+
+  image:
+    repository: ghcr.io/pagopa/devops-java-springboot-color
+    tag: 0.10.0
+    pullPolicy: Always
+
+  tmpVolumeMount:
+    create: true
+    mounts:
+      - name: tmp
+        mountPath: /tmp
+      - name: logs
+        mountPath: /app/logs
+
+  livenessProbe:
+    httpGet:
+      path: /status/live
+      port: 8080
+    initialDelaySeconds: 30
+    failureThreshold: 6
+    periodSeconds: 10
+
+  readinessProbe:
+    httpGet:
+      path: /status/ready
+      port: 8080
+    initialDelaySeconds: 30
+    failureThreshold: 6
+    periodSeconds: 10
+
+  service:
+    create: true
+    type: ClusterIP
+    ports:
+      - 8080
+
+  ingress:
+    create: true
+    host: printit.itn.internal.dev.platform.pagopa.it
+    path: /devops-app-status/status(/|$)(.*)
+    rewriteTarget: /$2
+    servicePort: 8080
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "40m"
+    limits:
+      memory: "256Mi"
+      cpu: "150m"
+
+  keyvault:
+    name: "pagopa-d-itn-printit-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+
+
+  # affinity:
+  #   nodeAffinity:
+  #     requiredDuringSchedulingIgnoredDuringExecution:
+  #       nodeSelectorTerms:
+  #       - matchExpressions:
+  #         - key: kubernetes.azure.com/mode
+  #           operator: In
+  #           values:
+  #           - user
+  #   podAntiAffinity:
+  #     preferredDuringSchedulingIgnoredDuringExecution:
+  #     - weight: 100
+  #       podAffinityTerm:
+  #         labelSelector:
+  #           matchLabels:
+  #             aadpodidbinding: blueprint-pod-identity
+  #         namespaces: ["blueprint"]
+  #         topologyKey: topology.kubernetes.io/zone
