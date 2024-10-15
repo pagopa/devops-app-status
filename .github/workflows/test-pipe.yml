@@ -45,10 +45,7 @@ jobs:
         # Enables kubelogin for non-admin user scenario. Values: true or false
         use-kubelogin: true
 
-    - name: kubectl-alpine
-      # You may pin to the exact commit or the version.
-      # uses: d4nicoder/kubectl-action@ee75ec0ddf41254fd576bdcc635e13cea3b00bc8
-      uses: actions-hub/kubectl@master
-      with:
-        args: get pods -A
+    - uses: tale/kubectl-action@v1
+    - run: kubectl get pods
+
           
