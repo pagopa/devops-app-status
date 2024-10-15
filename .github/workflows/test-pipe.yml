@@ -45,7 +45,10 @@ jobs:
         # Enables kubelogin for non-admin user scenario. Values: true or false
         use-kubelogin: true
 
-    - uses: tale/kubectl-action@v1
-    - run: kubectl get pods
+    - name: use kubectl
+      uses: tale/kubectl-action@v1
+
+    - name: run kubectl
+      run: kubectl get pods
 
           
