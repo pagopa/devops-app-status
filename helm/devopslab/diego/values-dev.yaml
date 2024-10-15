@@ -1,5 +1,5 @@
 microservice-chart:
-  namespace: "diego"
+  namespace: "test-app-status"
   nameOverride: ""
   fullnameOverride: ""
 
