@@ -45,8 +45,9 @@ jobs:
         # Enables kubelogin for non-admin user scenario. Values: true or false
         use-kubelogin: true
 
-    - uses: actions-hub/kubectl@master
+    - uses: imajeetyadav/kubectl@v1
       with:
-        args: get pods
+        version: v1.25.5 # optional
+    - run: kubectl get pods
 
           
