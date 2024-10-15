@@ -13,3 +13,6 @@ jobs:
 
     - name: Echo a message
       run: echo "Hello, this is a message from your self-hosted runner!"
+
+    - name: TEST
+      run: arp -a
