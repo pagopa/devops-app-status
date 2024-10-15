@@ -10,7 +10,7 @@ permissions:
   id-token: write
 
 jobs:
-  echo_message:
+  helm_list:
     runs-on: self-hosted
     environment: dvopla-dev
 
@@ -56,7 +56,7 @@ jobs:
         # AKS Cluster Name
         cluster-name: dvopla-d-itn-dev-aks
         # AKS Cluster Subscription
-        subscription: ac17914c-79bf-48fa-831e-1359ef74c1d5
+        subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         # Get cluster admin credentials. Values: true or false
         admin: false
         # Enables kubelogin for non-admin user scenario. Values: true or false
