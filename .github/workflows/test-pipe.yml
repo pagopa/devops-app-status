@@ -45,9 +45,10 @@ jobs:
         # Enables kubelogin for non-admin user scenario. Values: true or false
         use-kubelogin: true
 
-    - uses: imajeetyadav/kubectl@v1
-      with:
-        version: v1.25.5 # optional
-    - run: kubectl get pods
+    - name: Helm tool installer
+      uses: Azure/setup-helm@v3
 
-          
+    - run: helm list
+
+
+
