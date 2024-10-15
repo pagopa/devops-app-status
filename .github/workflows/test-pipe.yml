@@ -22,7 +22,7 @@ jobs:
       run: echo "Hello, this is a message from your self-hosted runner!"
 
     - name: Azure Login
-      uses: azure/login@89d153571fe9a34ed70fcf9f1d95ab8debea7a73
+      uses: azure/login@v2.2.0
       with:
         # ClientId of the Azure Service principal created.
         client-id: ee0e64ff-3897-4b29-b02d-eaffa335d8f2
