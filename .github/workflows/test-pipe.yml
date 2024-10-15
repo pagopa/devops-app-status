@@ -55,6 +55,7 @@ jobs:
 
     - name: 🚀 Deploy helm
       run: |
+        cd ./helm/devopslab/diego
         helm upgrade -i -n test-app-status -f values-dev.yaml status \.
     
 
