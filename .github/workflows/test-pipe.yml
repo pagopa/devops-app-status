@@ -22,7 +22,7 @@ jobs:
       run: echo "Hello, this is a message from your self-hosted runner!"
 
     - name: Azure Login
-      uses: Azure/login@v2.2.0
+      uses: azure/login@89d153571fe9a34ed70fcf9f1d95ab8debea7a73
       with:
         # ClientId of the Azure Service principal created.
         client-id: c296c025-68e5-447d-b93b-e6c44dbd1c64
@@ -31,9 +31,9 @@ jobs:
         # Azure subscriptionId
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         # Set auth type
-        auth-type: IDENTITY
+        #auth-type: IDENTITY
         enable-AzPSSession: true
-        
+
     - name: Azure CLI script
       uses: azure/cli@v2
       with:
