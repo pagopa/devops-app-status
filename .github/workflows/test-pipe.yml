@@ -25,7 +25,7 @@ jobs:
       uses: azure/login@89d153571fe9a34ed70fcf9f1d95ab8debea7a73
       with:
         # ClientId of the Azure Service principal created.
-        client-id: c296c025-68e5-447d-b93b-e6c44dbd1c64
+        client-id: ee0e64ff-3897-4b29-b02d-eaffa335d8f2
         # TenantId of the Azure Service principal created.
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         # Azure subscriptionId
