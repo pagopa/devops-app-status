@@ -14,5 +14,20 @@ jobs:
     - name: Echo a message
       run: echo "Hello, this is a message from your self-hosted runner!"
 
-    - name: TEST
-      run: arp -a
+    - name: Setup kubelogin
+      uses: Azure/use-kubelogin@v1
+
+    - name: Azure Kubernetes set context
+      uses: Azure/aks-set-context@v3
+      with:
+        # Resource Group Name
+        resource-group: dvopla-d-itn-dev-aks-rg
+        # AKS Cluster Name
+        cluster-name: dvopla-d-itn-dev-aks
+        # AKS Cluster Subscription
+        subscription: ac17914c-79bf-48fa-831e-1359ef74c1d5
+        # Get cluster admin credentials. Values: true or false
+        admin: false
+        # Enables kubelogin for non-admin user scenario. Values: true or false
+        use-kubelogin: true
+          
