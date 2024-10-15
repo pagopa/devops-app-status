@@ -6,6 +6,7 @@ on:
 jobs:
   echo_message:
     runs-on: self-hosted
+    environment: dvopla-dev
 
     steps:
     - name: Checkout repository
@@ -18,11 +19,11 @@ jobs:
       uses: Azure/login@v2.2.0
       with:
         # ClientId of the Azure Service principal created.
-        client-id: ${{ dvopla-dev.AZURE_CLIENT_ID }}
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
         # TenantId of the Azure Service principal created.
-        tenant-id: ${{ dvopla-dev.AZURE_TENANT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         # Azure subscriptionId
-        subscription-id: ${{ dvopla-dev.AZURE_SUBSCRIPTION_ID }}          
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}          
 
     - name: Azure Kubernetes set context
       uses: Azure/aks-set-context@v3
