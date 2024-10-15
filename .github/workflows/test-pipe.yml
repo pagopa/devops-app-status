@@ -14,9 +14,6 @@ jobs:
     - name: Echo a message
       run: echo "Hello, this is a message from your self-hosted runner!"
 
-    - name: Setup kubelogin
-      uses: Azure/use-kubelogin@v1
-
     - name: Azure Kubernetes set context
       uses: Azure/aks-set-context@v3
       with:
