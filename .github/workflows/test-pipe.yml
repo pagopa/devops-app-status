@@ -12,7 +12,7 @@ permissions:
 jobs:
   helm_list:
     runs-on: self-hosted
-    environment: dvopla-dev
+    environment: github-dev
 
     steps:
     - name: Checkout repository
@@ -25,7 +25,7 @@ jobs:
       uses: azure/login@v2.2.0
       with:
         # ClientId of the Azure Service principal created.
-        client-id: c296c025-68e5-447d-b93b-e6c44dbd1c64
+        client-id: ${{ secrets.CLIENT_ID }}
         # TenantId of the Azure Service principal created.
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         # Azure subscriptionId
