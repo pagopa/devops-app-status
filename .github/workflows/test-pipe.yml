@@ -47,8 +47,15 @@ jobs:
 
     - name: Helm tool installer
       uses: Azure/setup-helm@v3
+    
+    - name: Update helm deps
+      run: helm dep update
 
-    - run: helm list -n test-app-status
+    - name: 🚀 Deploy helm
+      run: |
+        cd ./helm/devopslab/diego
+        helm upgrade -i -n test-app-status -f values-dev.yaml status \.
+    
 
 
 
