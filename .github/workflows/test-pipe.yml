@@ -48,7 +48,7 @@ jobs:
     - name: Helm tool installer
       uses: Azure/setup-helm@v3
 
-    - run: helm list
+    - run: helm list -n test-app-status
 
 
 
