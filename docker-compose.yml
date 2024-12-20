@@ -1,10 +1,10 @@
 version: "3.8"
 services:
-  status:
+  status-service:
     build:
-      dockerfile: ./Dockerfile
       context: .
-    container_name: status
+      dockerfile: Dockerfile
+    container_name: status-service
     restart: always
     ports:
-      - "8000:8000"
+      - "8000:8080"
