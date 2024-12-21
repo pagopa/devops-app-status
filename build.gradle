@@ -1,12 +1,16 @@
 plugins {
-    id 'org.springframework.boot' version '2.5.4'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'org.springframework.boot' version '3.2.3'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.graalvm.buildtools.native' version '0.9.28'
     id 'java'
 }
 
-group = 'it.pagopa.status'
+group = 'it.pagopa'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+
+java {
+    sourceCompatibility = '21'
+}
 
 repositories {
     mavenCentral()
@@ -14,9 +18,20 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-test {
+tasks.named('test') {
     useJUnitPlatform()
+}
+
+graalvmNative {
+    binaries {
+        main {
+            imageName = 'status-service'
+            mainClass = 'it.pagopa.status.StatusApplication'
+            buildArgs.add('--enable-url-protocols=http')
+        }
+    }
 }
