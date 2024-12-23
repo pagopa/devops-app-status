@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.21-alpine AS builder
+FROM golang:1.21-alpine@sha256:2414035b086e3c42b99654c8b26e6f5b1b1598080d65fd03c7f499552ff4dc94 AS builder
 WORKDIR /build
 
 # Add necessary build tools
@@ -24,7 +24,7 @@ RUN echo "🔍 Running security checks..." && \
     go vet ./...
 
 # Final stage
-FROM alpine:3.19
+FROM alpine:3.19@sha256:7a85bf5dc56c949be827f84f9185161265c58f589bb8b2a6b6bb6d3076c1be21
 WORKDIR /app
 
 # Add non-root user
