@@ -15,7 +15,7 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_github_runner_aks"></a> [github\_runner\_aks](#module\_github\_runner\_aks) | ./modules/app-github-runner-aks | n/a |
+| <a name="module_github_runner_aks"></a> [github\_runner\_aks](#module\_github\_runner\_aks) | git::https://github.com/pagopa/github-actions-tf-modules.git//app-github-runner-creator | main |
 
 ## Resources
 
@@ -36,9 +36,10 @@
 | <a name="input_aks_resource_group"></a> [aks\_resource\_group](#input\_aks\_resource\_group) | Aks cluster resource group name | `string` | n/a | yes |
 | <a name="input_container_app_github_runner_env_name"></a> [container\_app\_github\_runner\_env\_name](#input\_container\_app\_github\_runner\_env\_name) | Container app env name dedicated for github runners | `string` | n/a | yes |
 | <a name="input_container_app_github_runner_env_rg"></a> [container\_app\_github\_runner\_env\_rg](#input\_container\_app\_github\_runner\_env\_rg) | Container app resource group env dedicated for github runners | `string` | n/a | yes |
+| <a name="input_domain"></a> [domain](#input\_domain) | Domain name | `string` | n/a | yes |
 | <a name="input_env"></a> [env](#input\_env) | Environment | `string` | n/a | yes |
 | <a name="input_env_short"></a> [env\_short](#input\_env\_short) | n/a | `string` | n/a | yes |
-| <a name="input_github"></a> [github](#input\_github) | GitHub Organization and repository name | <pre>object({<br>    org        = string<br>    repository = string<br>  })</pre> | n/a | yes |
+| <a name="input_github"></a> [github](#input\_github) | GitHub Organization and repository name | <pre>object({<br/>    org        = string<br/>    repository = string<br/>  })</pre> | n/a | yes |
 | <a name="input_github_token"></a> [github\_token](#input\_github\_token) | GitHub Organization and repository name | `string` | n/a | yes |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | n/a | `string` | n/a | yes |
 

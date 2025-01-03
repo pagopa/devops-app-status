@@ -24,5 +24,5 @@ github_repository_environment_cd = {
 container_app_github_runner_env_name = "dvopla-d-neu-core-github-runner-cae"
 container_app_github_runner_env_rg   = "dvopla-d-neu-core-github-runner-rg"
 
-aks_name= "dvopla-d-neu-dev01-aks"
-aks_resource_group= "dvopla-d-neu-dev01-aks-rg"
+aks_name           = "dvopla-d-neu-dev01-aks"
+aks_resource_group = "dvopla-d-neu-dev01-aks-rg"
