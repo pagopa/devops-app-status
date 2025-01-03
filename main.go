@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+	const web_port = ":8080"
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", handlers.HomeHandler)
@@ -17,6 +18,6 @@ func main() {
 	r.HandleFunc("/health", handlers.HealthHandler)
 	r.HandleFunc("/healthz", handlers.HealthzHandler)
 
-	log.Printf("Server starting on port 8000")
-	log.Fatal(http.ListenAndServe(":8000", r))
+	log.Printf("Server starting on port %s", web_port)
+	log.Fatal(http.ListenAndServe(web_port, r))
 }
