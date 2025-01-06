@@ -8,7 +8,7 @@ Available endpoints:
 
 * `/` - Basic health check
 * `/status` - Status check
-* `/info` - Status information 
+* `/info` - Status information
 * `/ping` - Status check
 * `/health` - Health check
 * `/healthz` - Kubernetes health probe
