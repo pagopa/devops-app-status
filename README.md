@@ -2,37 +2,29 @@
 
 ## Goal
 
-A simple http server that allow to test basic endpoint to verify that kubernetes and the namespace are reacheble:
+A simple http server that allows testing basic endpoints to verify that kubernetes and the namespace are reachable.
 
-endpoints exposed:
+Available endpoints:
 
-* `/`
-* `/status`
-* `/health`
-* `/healthz`
+* `/` - Basic health check
+* `/status` - Status check
+* `/info` - Status information 
+* `/ping` - Status check
+* `/health` - Health check
+* `/healthz` - Kubernetes health probe
+* `/livez` - Kubernetes liveness probe
+* `/readyz` - Kubernetes readiness probe
+* `/actuator/health` - Spring Boot-style health endpoint
+* `/actuator/metrics` - Spring Boot-style metrics endpoint
+* `/actuator/info` - Spring Boot-style info endpoint
 
-## How to release (manually)
+All endpoints return a JSON response: `{"result": "ok"}` with HTTP 200 status code.
 
-go to the helm folder like `helm/selfcare/pnpg`
+## Default port 8080
 
-### Init helm
+The default port is `8080`
 
-```sh
-helm dep update
-```
+## Security
 
-### Deploy helm package
-
-Go to helm folder an launch this command
-
-```sh
-helm upgrade -i -n <namespace> -f <values file name> <helm app name> \.
-
-helm upgrade -i -n diego -f values-dev.yaml status \.
-```
-
-## Special thanks
-
-This project born from the fantastic tutorial created by the Biella python group.
-
-<https://github.com/PythonBiellaGroup/FastCash>
+* no user root enabled
+* alpine version

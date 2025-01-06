@@ -46,9 +46,19 @@ EXPOSE 8080
 ENV TZ=Europe/Rome \
     APP_USER=appuser
 
-# Health check
+# Health checks for all endpoints
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/ && \
+        wget --no-verbose --tries=1 --spider http://localhost:8080/status && \
+        wget --no-verbose --tries=1 --spider http://localhost:8080/info && \
+        wget --no-verbose --tries=1 --spider http://localhost:8080/ping && \
+        wget --no-verbose --tries=1 --spider http://localhost:8080/health && \
+        wget --no-verbose --tries=1 --spider http://localhost:8080/healthz && \
+        wget --no-verbose --tries=1 --spider http://localhost:8080/livez && \
+        wget --no-verbose --tries=1 --spider http://localhost:8080/readyz && \
+        wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health && \
+        wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/metrics && \
+        wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/info || exit 1
 
 # Run application
 CMD echo "🚀 Starting status-service..." && \
